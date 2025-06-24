@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Computer Basics</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background-color: black;
+      color: white;
+      text-align: center;
+    }
+
+    #mainMenu, #detailPage {
+      max-width: 500px;
+      margin: 20px auto;
+      background: white;
+      color: black;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px lightgray;
+    }
+
+    .topic-btn {
+      background-color: dodgerblue;
+      border: none;
+      color: white;
+      padding: 15px 20px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .topic-btn:hover {
+      background-color: mediumblue;
+    }
+
+    #detailPage img {
+      max-width: 100%;
+      height: 150px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    #deviceTitle {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    #descBox {
+      font-size: 16px;
+      min-height: 60px;
+    }
+
+    #backBtn, #exitBtn {
+      margin-top: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #backBtn {
+      background-color: #888;
+      color: white;
+    }
+
+    #backBtn:hover {
+      background-color: #555;
+    }
+
+    #exitBtn {
+      background-color: crimson;
+      color: white;
+    }
+
+    #exitBtn:hover {
+      background-color: darkred;
+    }
+
+    #prevBtn, #nextBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px 10px 0 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: dodgerblue;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    #prevBtn:hover, #nextBtn:hover {
+      background-color: mediumblue;
+    }
+
+    #splashScreen {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      color: black;
+    }
+
+    #splashScreen img {
+      width: 150px;
+      height: 150px;
+      cursor: pointer;
+    }
+
+    #splashScreen p {
+      margin-top: 10px;
+      font-size: 16px;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splashScreen">
+    <img src="https://cdn-icons-png.flaticon.com/512/771/771298.png" alt="App Logo" id="logo" onclick="enterApp()" />
+    <p>Computer Basisc</p>
+  </div>
+
+  <!-- Main Menu -->
+  <div id="mainMenu" style="display:none;">
+    <h1>Computer Basics</h1>
+    <button class="topic-btn" onclick="openTopic('input')">Input Devices</button>
+    <button class="topic-btn" onclick="openTopic('output')">Output Devices</button>
+    <button class="topic-btn" onclick="openTopic('software')">Software</button>
+    <button class="topic-btn" onclick="openTopic('hardware')">Hardware</button>
+  </div>
+
+  <!-- Detail Page -->
+  <div id="detailPage" style="display:none;">
+    <h2 id="topicTitle"></h2>
+    <img id="deviceImage" src="" alt="" onclick="nextDevice()" />
+    <h3 id="deviceTitle"></h3> <!-- Device name title -->
+    <div id="descBox"></div>
+    <button id="prevBtn" onclick="prevDevice()">Previous</button>
+    <button id="nextBtn" onclick="nextDevice()">Next</button>
+    <button id="backBtn" onclick="goBack()">Back to Menu</button>
+    <button id="exitBtn" onclick="exitApp()">Exit</button>
+  </div>
+
+  <script>
+    let currentTopic = '';
+    let currentIndex = 0;
+
+    const data = {
+      input: [
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/LenovoKeyboard.jpg/500px-LenovoKeyboard.jpg", alt: "Keyboard", desc: "A keyboard allows you to type text, numbers, and commands into the computer." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/2/22/3-Tasten-Maus_Microsoft.jpg", alt: "Mouse", desc: "Controls the movement of the cursor on the screen." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Epson_V850_scanner_open_20230920.jpg/500px-Epson_V850_scanner_open_20230920.jpg", alt: "Scanner", desc: "Converts physical documents into digital form." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Shure_mikrofon_55S.jpg/330px-Shure_mikrofon_55S.jpg", alt: "Microphone", desc: "Captures audio input into the computer." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Joyopis.svg/500px-Joyopis.svg.png", alt: "Joystick", desc: "Used for controlling games and simulations." }
+      ],
+      output: [
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/MonitorLCDlcd.svg/500px-MonitorLCDlcd.svg.png", alt: "Monitor", desc: "Displays visual output from the computer." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Lexmark_X5100_Series.jpg/500px-Lexmark_X5100_Series.jpg", alt: "Printer", desc: "Produces a physical copy of digital documents." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Logitech-usb-speakers.jpg/330px-Logitech-usb-speakers.jpg", alt: "Speaker", desc: "Outputs audio from the computer." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/IFA_2012_IMG_5767.JPG/330px-IFA_2012_IMG_5767.JPG", alt: "Projector", desc: "Projects the computer display onto a wall or screen." }
+      ],
+      software: [
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Operating_system_placement.svg/330px-Operating_system_placement.svg.png", alt: "Operating System", desc: "An operating system (OS) is system software that manages computer hardware and software resources, and provides common services for computer programs." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/2/26/Windows_10_Calculator.png", alt: "Application", desc: "Programs that perform specific tasks (e.g., MS Word, Chrome)." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Paku-paku4-dos.png/500px-Paku-paku4-dos.png", alt: "Game", desc: "Interactive entertainment software." }
+      ],
+      hardware: [
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Intel_i9-14900KF_CPU.jpg/500px-Intel_i9-14900KF_CPU.jpg", alt: "CPU", desc: "The brain of the computer that processes data." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Swissbit_2GB_PC2-5300U-555.jpg/500px-Swissbit_2GB_PC2-5300U-555.jpg", alt: "RAM", desc: "Temporary memory that helps the computer run faster." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Computer-motherboard.jpg/500px-Computer-motherboard.jpg", alt: "Motherboard", desc: "The main circuit board that connects all parts." },
+        { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/ST3320620AS.jpg/500px-ST3320620AS.jpg", alt: "Hard Drive", desc: "Stores all data and files permanently." }
+      ]
+    };
+
+    function enterApp() {
+      document.getElementById('splashScreen').style.display = 'none';
+      document.getElementById('mainMenu').style.display = 'block';
+    }
+
+    function openTopic(topic) {
+      currentTopic = topic;
+      currentIndex = 0;
+
+      document.getElementById('mainMenu').style.display = 'none';
+      document.getElementById('detailPage').style.display = 'block';
+
+      document.getElementById('topicTitle').textContent = topic.charAt(0).toUpperCase() + topic.slice(1) + " Devices";
+      showDevice();
+    }
+
+    function showDevice() {
+      const device = data[currentTopic][currentIndex];
+      document.getElementById('deviceImage').src = device.img;
+      document.getElementById('deviceImage').alt = device.alt;
+      document.getElementById('deviceTitle').textContent = device.alt;
+      document.getElementById('descBox').textContent = device.desc;
+    }
+
+    function nextDevice() {
+      currentIndex++;
+      if (currentIndex >= data[currentTopic].length) {
+        currentIndex = 0;
+      }
+      showDevice();
+    }
+
+    function prevDevice() {
+      currentIndex--;
+      if (currentIndex < 0) {
+        currentIndex = data[currentTopic].length - 1;
+      }
+      showDevice();
+    }
+
+    function goBack() {
+      document.getElementById('detailPage').style.display = 'none';
+      document.getElementById('mainMenu').style.display = 'block';
+    }
+
+    function exitApp() {
+      document.getElementById('detailPage').style.display = 'none';
+      document.getElementById('mainMenu').style.display = 'none';
+      document.getElementById('splashScreen').style.display = 'flex';
+    }
+  </script>
+
+</body>
+</html>
